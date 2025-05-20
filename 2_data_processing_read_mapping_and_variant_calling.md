@@ -1,7 +1,7 @@
 # Data processing, read mapping and variant calling  
 
 Initial quality of reads was checked using *FastQC* v0.12.1 and collated using 
-*MultiQC* v1.18.  
+*MultiQC* v1.18. These tools were employed throughout data processing to evaluate the affect of a tool on the reads.
 
 ``` bash
 module load fastqc
@@ -29,7 +29,8 @@ do
 done
 ```
 
-*FastQC* v0.12.1 and *MultiQC* v1.18 used again to assess the impact of *fastp* v0.23.4 on the reads. *Kraken2* v2.1.3 is then employed to identify potential contaminants from a database of reference sequences including archea, bacteria, viral, plasmid, vector and human. Unclassified reads are isolated for downstream analysis.
+*Kraken2* v2.1.3 was then employed to identify potential contaminants from a database of reference sequences including archea, bacteria, viral, plasmid, vector and human. Unclassified reads are isolated for downstream analysis.
+Unclassified outputs became ".fq" (uncompressed) files.
 ``` bash
 for R1 in "$INPUT_DIR"/*_R1.fastq.gz
 do
@@ -44,11 +45,31 @@ do
   			--db "$KRAKEN_DATABASE" \
   			--gzip-compressed \
   			--paired "$R1" "$R2" \
-  			--classified-out "${CLASSIFIED_DIR}/${SAMPLE}_classified_#.fq" \
-  			--unclassified-out "${UNCLASSIFIED_DIR}/${SAMPLE}_unclassified_#.fq" \
+  			--classified-out "${CLASSIFIED_DIR}/${SAMPLE}_classified#.fq" \
+  			--unclassified-out "${UNCLASSIFIED_DIR}/${SAMPLE}_unclassified#.fq" \
   			--report "${REPORT_DIR}/${SAMPLE}_report.txt"
     fi
 done
 
 ```  
+Reads were then aligned to consensus loci ("$CONSENSUS_REF") discovered during initial ddRADseq step (see [ddRADseq and loci discovery](1_ddRADseq_and_loci_discovery.md))
+using *bwa* v0.7.17. To reduce intermediate file creation, reads were also sorted into their
+respective genomic coordinates with *samtools* v1.20.
+``` bash
+module load bwa
+module load samtools
 
+# Get individual names by stripping _1.fq
+INDS=($(for i in "$SEQUENCES"/*_1.fq; do basename "$i" | sed -E 's/_unclassified.*//'; done))
+
+for IND in "${INDS[@]}"; do
+    FORWARD="$SEQUENCES/${IND}_unclassified_1.fq"
+    REVERSE="$SEQUENCES/${IND}_unclassified_2.fq"
+    OUTPUT="$OUTDIR/${IND}_sort.bam"
+
+    echo "Aligning $IND with bwa"
+    bwa mem -M -t 15 "$CONSENSUS_REF" "$FORWARD" "$REVERSE" \
+        | samtools view -b -@ 15 \
+        | samtools sort -@ 15 -T "$OUTDIR/${IND}" > "$OUTPUT"
+done
+```
