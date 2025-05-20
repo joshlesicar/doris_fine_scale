@@ -1,7 +1,7 @@
 # Data processing, read mapping and variant calling  
 
-Initial quality of reads was checked using *FastQC*v0.12.1 and collated using 
-*MultiQC*v1.18.  
+Initial quality of reads was checked using *FastQC* v0.12.1 and collated using 
+*MultiQC* v1.18.  
 
 ``` bash
 module load fastqc
@@ -12,7 +12,7 @@ module load multiqc
 mkdir -p multiqc_output
 multiqc . --outdir multiqc_output
 ```  
-*fastp*v0.23.4 was used to remove adapter contamination, discard reads less than 150 base pairs in length and of Phred score \le 20 (Q20), ensuring a base call precision of 99%.
+*fastp* v0.23.4 was used to remove adapter contamination, discard reads less than 150 base pairs in length and of Phred score $le; 20 (Q20), ensuring a base call precision of 99%.
 
 ``` bash
 module load fastp
