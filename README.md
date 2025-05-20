@@ -1,1 +1,10 @@
-# doris_fine_scale
+# Fine scale dispersal and population genetics of a *Doris kerguelenensis* lineage
+
+## Data processing
+
+[ddRADseq and loci discovery](C:/Users/joshl/tmp/doris_fine_scale/1_ddRADseq_and_loci_discovery.md)
+[Data processing, read mapping and variant calling](C:/Users/joshl/tmp/doris_fine_scale/2_data_processing_read_mapping_and_variant_calling.md)
+More to follow...
+
+## Data analyses
+More to follow... 
