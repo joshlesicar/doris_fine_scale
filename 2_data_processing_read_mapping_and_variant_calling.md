@@ -53,14 +53,13 @@ done
 
 ```  
 Reads were then aligned to consensus loci ("$CONSENSUS_REF") discovered during initial ddRADseq step (see [ddRADseq and loci discovery](1_ddRADseq_and_loci_discovery.md))
-using *bwa* v0.7.17. The consenus FASTA was indexed before being used for allignment.  
+using *bwa* v0.7.17. The maximal exact matches (mem) algorithim was used, as it is recommended for short reads >70 bp. The consenus FASTA was indexed before being used for allignment.To reduce intermediate file creation, reads were also sorted into their
+respective genomic coordinates with *samtools* v1.20. 
 ```bash
 cd $CONSENSUS_REF
 module load bwa
 bwa index dor29_consensus_7858_loci.fasta
 ``` 
-To reduce intermediate file creation, reads were also sorted into their
-respective genomic coordinates with *samtools* v1.20.
 ``` bash
 module load bwa
 module load samtools
