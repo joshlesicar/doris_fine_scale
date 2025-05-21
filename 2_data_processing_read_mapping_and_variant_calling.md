@@ -72,4 +72,13 @@ for IND in "${INDS[@]}"; do
         | samtools view -b -@ 15 \
         | samtools sort -@ 15 -T "$OUTDIR/${IND}" > "$OUTPUT"
 done
-```
+```  
+To assess the alignment quality for each sample, samtools function 'flagstat' was employed.  
+``` bash
+module load samtools
+
+for sample in "$INPUT_DIR"/*_sort.bam
+do
+	samtools flagstat "$sample" > ${sample%_sort.bam}_flagstat.txt
+done
+```  
