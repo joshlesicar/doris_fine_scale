@@ -88,8 +88,8 @@ do
 done
 ```  
 Before proceeding with PCR duplication removal, *picard* needs to know read group fields, 
-particularly DNA preparation library identifier (see [here](https://gatk.broadinstitute.org/hc/en-us/articles/360035890671-Read-groups)).
-As aviti sequencing was used, this field was not included within the fastq metadata field
+specifically the DNA preparation library identifier (see [here](https://gatk.broadinstitute.org/hc/en-us/articles/360035890671-Read-groups)).
+As avidity sequencing was used, this field was not included within the fastq metadata field
 and must be inserted manually. As only one DNA preperation library was used per sample, 
 all fields can use the sample name as a base. This was completed using *picard* v3.1.1 and the 
 "AddOrReplaceReadGroups" function. 
@@ -104,7 +104,7 @@ OUT="$OUTPUT_DIR/${base}.rg.bam"
 echo "Processing sample: $base"
 
 #One library per sample, use sample name as a base for all 5 fields
-#aviti sequencing used, but compatible with illumina-style reads
+#avidity sequencing used, but compatible with illumina-style reads
 java -jar $PICARD_DIR AddOrReplaceReadGroups \
 	I="$sample" \
 	O="$OUT" \
@@ -138,4 +138,17 @@ java -jar $PICARD_DIR MarkDuplicates \
 	M=$REPORT_DIR/${base}_report.txt
 done
 ```
+Before variant calling, the ```bash.bam``` files are indexed as *bcftools* (the program used for variant calling) 
+requires ```bash.bai``` index files. This is completed using *samtools* v1.20.  
+```bash
+module load samtools
+
+for bamfile in $INPUT_DIR/*.bam
+do
+	echo "Indexing $bamfile"
+	samtools index "$bamfile"
+done
+
+```  
+
 
