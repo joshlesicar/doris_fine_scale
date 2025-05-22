@@ -138,8 +138,8 @@ java -jar $PICARD_DIR MarkDuplicates \
 	M=$REPORT_DIR/${base}_report.txt
 done
 ```
-Before variant calling, the ```bash.bam``` files are indexed as *bcftools* (the program used for variant calling) 
-requires ```bash.bai``` index files. This is completed using *samtools* v1.20.  
+Before variant calling, the ```.bam``` files are indexed as *bcftools* (the program used for variant calling) 
+requires ```.bai``` index files. This is completed using *samtools* v1.20.  
 ```bash
 module load samtools
 
@@ -150,5 +150,13 @@ do
 done
 
 ```  
+Variant calling was completed with *bcftools* v1.19.Sequences in each ```.bam``` file are 
+concatenated together in mpileup file, which from variants are called using the ```call``` function. 
+Both variant and invariant sites are called, as both are required for many population genetic statistics.  
+```bash
+module load bcftools
 
+bcftools mpileup --threads 15 -a AD,DP,SP -Ou -f $CONSENSUS_REF *.bam | \
+bcftools call -f GQ,GP -mv -Oz -o $OUTPUT_DIR/doris29_raw.vcf.gz --threads 15
+```
 
