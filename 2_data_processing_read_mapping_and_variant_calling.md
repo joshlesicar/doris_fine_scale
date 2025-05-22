@@ -87,3 +87,55 @@ do
 	samtools flagstat "$sample" > ${sample%_sort.bam}_flagstat.txt
 done
 ```  
+Before proceeding with PCR duplication removal, *picard* needs to know read group fields, 
+particularly DNA preparation library identifier (see [here](https://gatk.broadinstitute.org/hc/en-us/articles/360035890671-Read-groups)).
+As aviti sequencing was used, this field was not included within the fastq metadata field
+and must be inserted manually. As only one DNA preperation library was used per sample, 
+all fields can use the sample name as a base. This was completed using *picard* v3.1.1 and the 
+"AddOrReplaceReadGroups" function. 
+```bash
+for sample in "$INPUT_DIR"/*.bam
+do
+base=$(basename "$sample" "_sort.bam")
+
+#Output BAM file with rg tag
+OUT="$OUTPUT_DIR/${base}.rg.bam"
+
+echo "Processing sample: $base"
+
+#One library per sample, use sample name as a base for all 5 fields
+#aviti sequencing used, but compatible with illumina-style reads
+java -jar $PICARD_DIR AddOrReplaceReadGroups \
+	I="$sample" \
+	O="$OUT" \
+	RGID="${base}_id" \
+	RGLB="${base}_lib" \
+	RGPL=ILLUMINA \
+	RGPU="${base}_unit" \
+	RGSM="$base"
+	
+done
+```
+With the library read group added, PCR duplicate removal using *picard* v3.1.1 can 
+proceed. Max file reads was set to slightly below the computing resource maximum of 1024.
+```bash
+module load java
+module load picard
+
+for sample in $INPUT_DIR/*.rg.bam
+do
+base=$(basename "$sample" ".rg.bam")
+
+ echo "Processing sample: $base"
+
+java -jar $PICARD_DIR MarkDuplicates \
+	I=$INPUT_DIR/${base}.rg.bam \
+	O=$OUTPUT_DIR/${base}.bam \
+	REMOVE_DUPLICATES=true \
+	ASSUME_SORTED=true \
+	VALIDATION_STRINGENCY=SILENT \
+	MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=950 \
+	M=$REPORT_DIR/${base}_report.txt
+done
+```
+
