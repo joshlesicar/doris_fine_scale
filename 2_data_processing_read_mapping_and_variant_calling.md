@@ -1,8 +1,25 @@
 # Data processing, read mapping and variant calling  
 
+## Tools & manuals  
+*Fastqc* v0.12.1 [manual.](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/)
+*MultiQC* v1.18 [manual.](https://github.com/MultiQC/MultiQC)
+*fastp* v0.23.4 [manual.](https://github.com/OpenGene/fastp)
+*kraken2* v2.1.3 [manual.](https://github.com/DerrickWood/kraken2/blob/master/docs/MANUAL.markdown)
+*bwa* v0.7.17 [manual.](https://bio-bwa.sourceforge.net/bwa.shtml)
+*samtools* v1.20 [manual.](https://www.htslib.org/doc/samtools.html)
+*picard* v3.1.1 [manual.](https://broadinstitute.github.io/picard/command-line-overview.html#Overview)
+*bcftools* v1.19 [manual.](https://samtools.github.io/bcftools/bcftools.html)  
+
+## Methodology  
+
+### Description  
+
 Initial quality of reads was checked using *FastQC* v0.12.1 and collated using 
 *MultiQC* v1.18. These tools were employed throughout data processing to evaluate the affect of a tool on the reads.
 
+### Parameters used 
+
+### Code  
 ``` bash
 module load fastqc
 mkdir -p fastqc_output
@@ -150,8 +167,8 @@ do
 done
 
 ```  
-Variant calling was completed with *bcftools* v1.19.Sequences in each ```.bam``` file are 
-concatenated together in mpileup file, which from variants are called using the ```call``` function. 
+Variant calling was completed with *bcftools* v1.19. Sequences in each ```.bam``` file are 
+concatenated together in a mpileup file, which from variants are called using the ```call``` function. 
 Both variant and invariant sites are called, as both are required for many population genetic statistics.  
 ```bash
 module load bcftools
