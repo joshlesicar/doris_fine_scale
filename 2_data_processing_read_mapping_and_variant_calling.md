@@ -53,6 +53,14 @@ done
 *Kraken2* v2.1.3 was then employed to identify potential contaminants from a database of reference sequences including archea, bacteria, viral, plasmid, vector and human. Unclassified reads are isolated for downstream analysis.
 Unclassified outputs became ".fq" (uncompressed) files.  
 **Parameteres used**  
+```use-names```: Taxonomic identification output uses scientific names.  
+```threads```: Number of threads.  
+```db```: Kraken2 database.  
+```gzip-compressed```: Denotes the input files are gzip compressed.  
+```paired```: Denotes sequences are paired-end.  
+```classified-out```: Filters classified (i.e. contaminant) sequences into a specified output directory.  
+```unclassified-out```: Filters unclassified (i.e. non-contaminant) sequences into a specified output directory.  
+```report```: Specifies output directory for report file.  
 **Code**  
 ``` bash
 for R1 in "$INPUT_DIR"/*_R1.fastq.gz
