@@ -171,6 +171,13 @@ done
 With the library read group added, PCR duplicate removal using *picard* v3.1.1 can 
 proceed. Max file reads was set to slightly below the computing resource maximum of 1024.  
 **Parameters used**  
+```I=```: Input files (BAM).  
+```O=```: Output directory and files.  
+```REMOVE_DUPLICATES=```: If true, excludes duplicates from output files.  
+```ASSUME_SORTED=```: If true, assumes the input file is coordinate sorted regadless of header information.  
+```VALIDATION_STRINGENCY=```: Checks for formatting problems, peformance enhanced when silent and processing BAM files.  
+```MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=```: Maximum number of file handles to keep open, set to slighter lower than the maximum of 1024.  
+```M=```: Specifies output file for duplication metrics.  
 **Code**  
 ```bash
 module load java
