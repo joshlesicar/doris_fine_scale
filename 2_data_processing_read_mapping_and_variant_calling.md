@@ -8,7 +8,8 @@
 *bwa* v0.7.17 [manual.](https://bio-bwa.sourceforge.net/bwa.shtml)  
 *samtools* v1.20 [manual.](https://www.htslib.org/doc/samtools.html)  
 *picard* v3.1.1 [manual.](https://broadinstitute.github.io/picard/command-line-overview.html#Overview)  
-*bcftools* v1.19 [manual.](https://samtools.github.io/bcftools/bcftools.html) 
+*bcftools* v1.19 [manual.](https://samtools.github.io/bcftools/bcftools.html)  
+*vcftools* v0.1.16 [manual.](https://vcftools.github.io/man_latest.html)  
 
 ## Methodology  
 
@@ -233,4 +234,25 @@ module load bcftools
 bcftools mpileup --threads 15 -a AD,DP,SP -Ou -f $CONSENSUS_REF *.bam | \
 bcftools call -f GQ,GP -m -Oz -o $OUTPUT_DIR/doris29_raw.vcf.gz --threads 15
 ```
+### Variant summary statistics
+*vcftools* v0.1.16 was used to generate summary statistics from the VCF with variants called.  
+**Parameters used**  
+```--missing-site```: Generates a file reporting the missingness on a per-site basis. File has suffix ".lmiss".  
+```--missing-indv```: Generates a file reporting the missingness on a per-individual basis. File has suffix ".imiss".  
+```--freq2```: Generates a file reporting the allele frequency for each site. File has suffix ".frq".  
+```--depth```: Generates a file containing the mean depth per individual. File has suffix ".idepth".  
+```--site-mean-depth```: Generates a file containng the mean depth per site averaged across all individuals. File has suffix ".ldepth.mean".  
+```--site-quality```: Generates a file containing per site SNP quality. File has suffix ".lqual".  
+```--het```: Generates a file containing a measure of heterozygosity on a per individual basis. File has suffix ".het".  
+**Code**  
+```bash
+module load vcftools
 
+vcftools --gzvcf doris29_raw.vcf.gz --missing-site --out "$OUTPUT_DIR/raw_vcf_stat"
+vcftools --gzvcf doris29_raw.vcf.gz --missing-indv --out "$OUTPUT_DIR/raw_vcf_stat"
+vcftools --gzvcf doris29_raw.vcf.gz --freq2 --out "$OUTPUT_DIR/raw_vcf_stat"
+vcftools --gzvcf doris29_raw.vcf.gz --depth --out "$OUTPUT_DIR/raw_vcf_stat"
+vcftools --gzvcf doris29_raw.vcf.gz --site-mean-depth --out "$OUTPUT_DIR/raw_vcf_stat"
+vcftools --gzvcf doris29_raw.vcf.gz --site-quality --out "$OUTPUT_DIR/raw_vcf_stat" 
+vcftools --gzvcf doris29_raw.vcf.gz --het --out "$OUTPUT_DIR/raw_vcf_stat"
+```
