@@ -15,10 +15,7 @@
 ### Initial quality check  
 
 Initial quality of reads was checked using *FastQC* v0.12.1 and collated using 
-*MultiQC* v1.18. These tools were employed throughout data processing to evaluate the affect of a tool on the reads.
-
-**Parameters used**   
-
+*MultiQC* v1.18. These tools were employed throughout data processing to evaluate the affect of a tool on the reads.  
 **Code**  
 ``` bash
 module load fastqc
@@ -30,8 +27,13 @@ mkdir -p multiqc_output
 multiqc . --outdir multiqc_output
 ```  
 ### Adapter contamination removal  
-*fastp* v0.23.4 was used to remove adapter contamination, discard reads less than 150 base pairs in length and of Phred score ≤ 20 (Q20), ensuring a base call precision of 99%.
+*fastp* v0.23.4 was used to remove adapter contamination, discard reads less than 150 base pairs in length and of Phred score ≤ 20, ensuring a base call precision of 99%.  
 **Parameters used**  
+```-j```: Output for json format report.  
+```-h```: Output for html format report.  
+```-q 20```: Discards reads with phred score ≤ 20.  
+```-l 150```: Discards reads below 150 bp in length.   
+```-detect_adapter_for_pe```: Enables adapter sequence detection for paired ends reads.  
 **Code**  
 ``` bash
 module load fastp
@@ -76,7 +78,7 @@ done
 ### Read alignment and sorting  
 Reads were then aligned to consensus loci ("$CONSENSUS_REF") discovered during initial ddRADseq step (see [ddRADseq and loci discovery](1_ddRADseq_and_loci_discovery.md))
 using *bwa* v0.7.17. The maximal exact matches (mem) algorithim was used, as it is recommended for short reads >70 bp. The consenus FASTA was indexed before being used for allignment.To reduce intermediate file creation, reads were also sorted into their
-respective genomic coordinates with *samtools* v1.20. 
+respective genomic coordinates with *samtools* v1.20.  
 **Parameters used**  
 **Code**  
 ```bash
@@ -119,7 +121,7 @@ specifically the DNA preparation library identifier (see [here](https://gatk.bro
 As avidity sequencing was used, this field was not included within the fastq metadata field
 and must be inserted manually. As only one DNA preperation library was used per sample, 
 all fields can use the sample name as a base. This was completed using *picard* v3.1.1 and the 
-"AddOrReplaceReadGroups" function. 
+"AddOrReplaceReadGroups" function.  
 **Parameters used**  
 **Code**  
 ```bash
