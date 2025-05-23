@@ -88,6 +88,11 @@ Reads were then aligned to consensus loci ("$CONSENSUS_REF") discovered during i
 using *bwa* v0.7.17. The maximal exact matches (mem) algorithim was used, as it is recommended for short reads >70 bp. The consenus FASTA was indexed before being used for allignment.To reduce intermediate file creation, reads were also sorted into their
 respective genomic coordinates with *samtools* v1.20.  
 **Parameters used**  
+```-M```: Mark shorter split hits as secondary (for Picard compatibility).  
+```-t```: Number of threads.  
+```-b```: Output in the BAM format.  
+```-@```: Number of BAM compression threads to use in addition to main thread.  
+```-T```: Species where temporary files should be written during the sorting process.  
 **Code**  
 ```bash
 cd $CONSENSUS_REF
