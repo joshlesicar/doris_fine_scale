@@ -92,7 +92,7 @@ respective genomic coordinates with *samtools* v1.20.
 ```-t```: Number of threads.  
 ```-b```: Output in the BAM format.  
 ```-@```: Number of BAM compression threads to use in addition to main thread.  
-```-T```: Species where temporary files should be written during the sorting process.  
+```-T```: Specifies where temporary files should be written during the sorting process.  
 **Code**  
 ```bash
 cd $CONSENSUS_REF
@@ -218,11 +218,19 @@ Variant calling was completed with *bcftools* v1.19. Sequences in each ```.bam``
 concatenated together in a mpileup file, which from variants are called using the ```call``` function. 
 Both variant and invariant sites are called, as both are required for many population genetic statistics.  
 **Parameters used**  
+```--threads```: Use multithreading with 15 number of worker threads.  
+```-a```: Annotations to output including allelic depth (AD), number of high-quality bases (DP) and Phred-scaled strand bias P-value (SP).  
+```-Ou```: Specifies output type as uncompressed BCF.  
+```-f (mpileup)```: Specifies reference fasta file.  
+```-f (call)```: Format fields to output for each sample, including genotype quality (QG) and genotype posterior probabilities (GP).   
+```-m```: Use multiallelic caller, and excludes -v (i.e. -mv) to call invariant sites too.  
+```-Oz```: Specifies output type as compressed VCF.   
+```-o```: The output directory and file.  
 **Code**  
 ```bash
 module load bcftools
 
 bcftools mpileup --threads 15 -a AD,DP,SP -Ou -f $CONSENSUS_REF *.bam | \
-bcftools call -f GQ,GP -mv -Oz -o $OUTPUT_DIR/doris29_raw.vcf.gz --threads 15
+bcftools call -f GQ,GP -m -Oz -o $OUTPUT_DIR/doris29_raw.vcf.gz --threads 15
 ```
 
