@@ -136,6 +136,13 @@ and must be inserted manually. As only one DNA preperation library was used per 
 all fields can use the sample name as a base. This was completed using *picard* v3.1.1 and the 
 "AddOrReplaceReadGroups" function.  
 **Parameters used**  
+```I=```: Input file (BAM).  
+```O=```: Output file directory.  
+```RGID=```: Read group ID (mandatory field).  
+```RGLB=```: Read group library (mandatory and necessary field).  
+```RGPL=```: Read group platform (mandatory field).  
+```RGPU=```: Read group platform unit (mandatory field).  
+```RGSM=```: Read group sample name (mandatory field).  
 **Code**  
 ```bash
 for sample in "$INPUT_DIR"/*.bam
