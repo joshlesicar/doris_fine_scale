@@ -1,3 +1,3 @@
 # ddRADseq and loci discovery
 
-Completed by Sally Lau. 
+Completed by Sally Lau.
