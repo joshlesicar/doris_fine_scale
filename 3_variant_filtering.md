@@ -2,7 +2,7 @@
 
 ## Tools & manuals
 
-vctools
+*vcftools* v0.1.16 [manual.](https://vcftools.github.io/man_latest.html)
 
 ## Methodology
 
@@ -42,7 +42,9 @@ hist(imiss$F_MISS,
 
 Only sites with a minimum base quality score of 30 were retained,
 corresponding to base call error percentage of 0.1%.*Vcftools* v0.1.16
-function `--minQ 30` was used. **Code**
+function `--minQ 30` was used.
+
+**Code**
 
 ``` bash
 vcftools --gzvcf doris29_raw.vcf.gz --minQ 30 --out $OUTPUT_DIR/rm_indels.vcf --recode --recode-INFO-all
@@ -56,6 +58,7 @@ After filtering, kept 113042 out of a possible 120429 Sites.
 First, the mean depth of sites across all samples needs to be found, to
 determine both the upper and lower limits for filtering by depth. This
 was found using *vcftools* v0.1.16 function `--site-mean-depth`.
+
 **Code**
 
 ``` bash
