@@ -1,7 +1,9 @@
 ---
 output:
-  md_document:
-    variant: markdown_github
+  github_document:
+knitr:
+  opts_chunk:
+    fig.path: "figures/"
 ---
 # Variant filtering  
 
@@ -21,7 +23,7 @@ After filtering, kept 120429 out of a possible 123612 Sites.
 
 ### Filter by missingness per sample  
 No samples needed to be removed on the basis of missing data. All samples had low missing data, with the maximum missingness observed to be 5.35%.  
-```{r, eval=TRUE,echo=FALSE}
+```{r sample_missingness, echo=FALSE, fig.path='figures/'}
 setwd("G:/My Drive/Honours/Bioinformatics")
 imiss <- read.table("missing_indv2.imiss", header = TRUE)
 
@@ -110,14 +112,15 @@ vcftools --vcf biallelic_sites.recode.vcf --keep localities/EI.keep --missing-si
 ```
 
 Most loci within each locality had an extremely low proportion of missing data, as seen plotted below. Therefore a conservative threshold of 0.95 will be used, meaning any loci with more than 5% missing data will be removed.
-```{r, eval=TRUE,echo=FALSE}
+```{r loci_missingness, echo=FALSE, fig.path='figures/'}
 setwd("G:/My Drive/Honours/Bioinformatics")
 lmiss_PAL <- read.table("PAL.lmiss", header = TRUE)
 hist(lmiss_PAL$F_MISS,
      breaks = 50,              # Number of bins
      main = "Palmer Archipelago",
      xlab = "Fraction of missing genotypes (F_MISS)",
-     ylab = "Number of Sites")
+     ylab = "Number of Sites",
+     xlim=c(0,1))
 
 lmiss_LI <- read.table("LI.lmiss", header = TRUE)
 hist(lmiss_LI$F_MISS,
@@ -148,6 +151,7 @@ hist(lmiss_EI$F_MISS,
      breaks = 50,              # Number of bins
      main = "Elephant Island",
      xlab = "Fraction of missing genotypes (F_MISS)",
-     ylab = "Number of Sites")
+     ylab = "Number of Sites",
+     xlim=c(0,1))
 
 ```  

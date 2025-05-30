@@ -2,6 +2,9 @@
 output:
   md_document:
     variant: markdown_github
+knitr:
+  opts_chunk:
+    fig.path: "figures/"
 ---
 # Data processing, read mapping and variant calling  
 

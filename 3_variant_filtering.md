@@ -1,3 +1,4 @@
+
 # Variant filtering
 
 ## Tools & manuals
@@ -24,7 +25,7 @@ After filtering, kept 120429 out of a possible 123612 Sites.
 No samples needed to be removed on the basis of missing data. All
 samples had low missing data, with the maximum missingness observed to
 be 5.35%.  
-![](3_variant_filtering_files/figure-markdown_github/unnamed-chunk-1-1.png)
+![](figures/sample_missingness-1.png)<!-- -->
 
 ### Filter by base quality
 
@@ -128,4 +129,4 @@ Most loci within each locality had an extremely low proportion of
 missing data, as seen plotted below. Therefore a conservative threshold
 of 0.95 will be used, meaning any loci with more than 5% missing data
 will be removed.
-![](3_variant_filtering_files/figure-markdown_github/unnamed-chunk-2-1.png)![](3_variant_filtering_files/figure-markdown_github/unnamed-chunk-2-2.png)![](3_variant_filtering_files/figure-markdown_github/unnamed-chunk-2-3.png)![](3_variant_filtering_files/figure-markdown_github/unnamed-chunk-2-4.png)![](3_variant_filtering_files/figure-markdown_github/unnamed-chunk-2-5.png)
+![](figures/loci_missingness-1.png)<!-- -->![](figures/loci_missingness-2.png)<!-- -->![](figures/loci_missingness-3.png)<!-- -->![](figures/loci_missingness-4.png)<!-- -->![](figures/loci_missingness-5.png)<!-- -->
