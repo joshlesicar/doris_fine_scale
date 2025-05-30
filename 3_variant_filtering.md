@@ -16,26 +16,14 @@ leaving only single nucleotide polymorphisms (SNPs).
 vcftools --gzvcf doris29_variants.vcf.gz --remove-indels --out $OUTPUT_DIR/rm_indels.vcf --recode --recode-INFO-all
 ```
 
-\*\*Data loss\* After filtering, kept 120429 out of a possible 123612
-Sites.
+**Data loss**  
+After filtering, kept 120429 out of a possible 123612 Sites.
 
 ### Filter by missingness per sample
 
 No samples needed to be removed on the basis of missing data. All
 samples had low missing data, with the maximum missingness observed to
-be 5.35%.
-
-``` r
-setwd("G:/My Drive/Honours/Bioinformatics")
-imiss <- read.table("missing_indv2.imiss", header = TRUE)
-
-hist(imiss$F_MISS,
-     breaks = 50,              # Number of bins
-     main ="",
-     xlab = "Proportion of missing variants (F_MISS)",
-     ylab = "Number of individuals")
-```
-
+be 5.35%.  
 ![](3_variant_filtering_files/figure-markdown_github/unnamed-chunk-1-1.png)
 
 ### Filter by base quality

@@ -16,12 +16,12 @@ Remove indels using *vcftools* v0.1.16 function ```--remove-indels```, leaving o
 ```bash
 vcftools --gzvcf doris29_variants.vcf.gz --remove-indels --out $OUTPUT_DIR/rm_indels.vcf --recode --recode-INFO-all
 ```   
-**Data loss*
+**Data loss**  
 After filtering, kept 120429 out of a possible 123612 Sites.  
 
 ### Filter by missingness per sample  
 No samples needed to be removed on the basis of missing data. All samples had low missing data, with the maximum missingness observed to be 5.35%.  
-```{r, eval=TRUE}
+```{r, eval=TRUE,echo=FALSE}
 setwd("G:/My Drive/Honours/Bioinformatics")
 imiss <- read.table("missing_indv2.imiss", header = TRUE)
 
