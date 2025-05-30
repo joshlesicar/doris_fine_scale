@@ -6,7 +6,7 @@ output:
 # Variant filtering  
 
 ## Tools & manuals  
-vctools
+*vcftools* v0.1.16 [manual.](https://vcftools.github.io/man_latest.html)  
 
 ## Methodology  
 
