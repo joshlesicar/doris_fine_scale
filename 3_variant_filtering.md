@@ -4,7 +4,7 @@
 
 *vcftools* v0.1.16 [manual.](https://vcftools.github.io/man_latest.html)
 
-## Methodology
+## Globally applied methodology
 
 ### Remove indels (insertions and deletions)
 
@@ -80,3 +80,52 @@ vcftools --vcf site_depth.recode.vcf --min-alleles 2 --max-alleles 2 --out $OUTP
 
 **Data loss**  
 After filtering, kept 73993 out of a possible 78505 Sites.
+
+## Population specific methodology
+
+### Allocate localities to their corresponding samples
+
+Each sample was matched with their corresponding locality and the two
+outgroup samples similarly labelled as an outgroup.  
+- PAL: Palmer Archipelago - LI: Low Island - BS: Bransfield Strait -
+KGI: King George Island - EI: Elephant Island - OG: Outgroup
+
+A locality.txt file was produced with two columns, the first
+representing the sample and the second locality such that: RN02_L0001
+PAL RN02_L0002 PAL RN03_L0003 PAL etc
+
+A .keep file (a plain text file) for each locality and their
+corresponding samples was produced with the use of a bash script. This
+returned the following files: PAL.keep, LI.keep, BS.keep, KGI.keep,
+EI.keep and OG.keep.
+
+**Code**
+
+    for pop in $(cut -f2 locality.txt | sort | uniq); do
+        echo "Processing population: $pop"
+        awk -v p=$pop '$2 == p' locality.txt > ${pop}.keep
+    done
+
+### Determine loci missingness per population
+
+As samples were gathered from multiple localities, loci missingness was
+calculated per population. This prevents the retention of loci that may
+have poor genotyping in one population but complete genotyping in all
+others. This is particularly important as 124/164 samples are from the
+PAL, as loci with poor genotyping within the minority localities would
+likely be retained if a global filer was applied. The outgroup samples
+(n=2) were excluded from these steps to prevent the inappropriate
+removal of divergent but informative loci. This was completed using
+*vcftools* v0.1.16 functions `--keep` and `--missing-site`.
+
+    vcftools --vcf biallelic_sites.recode.vcf --keep localities/PAL.keep --missing-site --out PAL
+    vcftools --vcf biallelic_sites.recode.vcf --keep localities/LI.keep --missing-site --out LI
+    vcftools --vcf biallelic_sites.recode.vcf --keep localities/BS.keep --missing-site --out BS
+    vcftools --vcf biallelic_sites.recode.vcf --keep localities/KGI.keep --missing-site --out KGI
+    vcftools --vcf biallelic_sites.recode.vcf --keep localities/EI.keep --missing-site --out EI
+
+Most loci within each locality had an extremely low proportion of
+missing data, as seen plotted below. Therefore a conservative threshold
+of 0.95 will be used, meaning any loci with more than 5% missing data
+will be removed.
+![](3_variant_filtering_files/figure-markdown_github/unnamed-chunk-2-1.png)![](3_variant_filtering_files/figure-markdown_github/unnamed-chunk-2-2.png)![](3_variant_filtering_files/figure-markdown_github/unnamed-chunk-2-3.png)![](3_variant_filtering_files/figure-markdown_github/unnamed-chunk-2-4.png)![](3_variant_filtering_files/figure-markdown_github/unnamed-chunk-2-5.png)
