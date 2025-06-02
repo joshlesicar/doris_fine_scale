@@ -88,12 +88,19 @@ After filtering, kept 73993 out of a possible 78505 Sites.
 
 Each sample was matched with their corresponding locality and the two
 outgroup samples similarly labelled as an outgroup.  
-- PAL: Palmer Archipelago - LI: Low Island - BS: Bransfield Strait -
-KGI: King George Island - EI: Elephant Island - OG: Outgroup
+- PAL: Palmer Archipelago  
+- LI: Low Island  
+- BS: Bransfield Strait  
+- KGI: King George Island  
+- EI: Elephant Island  
+- OG: Outgroup
 
 A locality.txt file was produced with two columns, the first
 representing the sample and the second locality such that: RN02_L0001
-PAL RN02_L0002 PAL RN03_L0003 PAL etc
+PAL  
+RN02_L0002 PAL  
+RN03_L0003 PAL  
+etc
 
 A .keep file (a plain text file) for each locality and their
 corresponding samples was produced with the use of a bash script. This
@@ -107,17 +114,18 @@ EI.keep and OG.keep.
         awk -v p=$pop '$2 == p' locality.txt > ${pop}.keep
     done
 
-### Determine loci missingness per population
+### Determine site missingness per population
 
-As samples were gathered from multiple localities, loci missingness was
-calculated per population. This prevents the retention of loci that may
+As samples were gathered from multiple localities, site missingness was
+calculated per population. This prevents the retention of sites that may
 have poor genotyping in one population but complete genotyping in all
-others. This is particularly important as 124/164 samples are from the
-PAL, as loci with poor genotyping within the minority localities would
-likely be retained if a global filer was applied. The outgroup samples
-(n=2) were excluded from these steps to prevent the inappropriate
-removal of divergent but informative loci. This was completed using
-*vcftools* v0.1.16 functions `--keep` and `--missing-site`.
+others. This is particularly important as 125/164 samples are from the
+Palmer Archipelago (PAL), as sites with poor genotyping within the
+minority localities would likely be retained if a global filter was
+applied. The outgroup samples (n=2) were excluded from these steps to
+prevent the inappropriate removal of divergent but informative loci.
+This was completed using *vcftools* v0.1.16 functions `--keep` and
+`--missing-site`.
 
     vcftools --vcf biallelic_sites.recode.vcf --keep localities/PAL.keep --missing-site --out PAL
     vcftools --vcf biallelic_sites.recode.vcf --keep localities/LI.keep --missing-site --out LI
@@ -126,7 +134,55 @@ removal of divergent but informative loci. This was completed using
     vcftools --vcf biallelic_sites.recode.vcf --keep localities/EI.keep --missing-site --out EI
 
 Most loci within each locality had an extremely low proportion of
-missing data, as seen plotted below. Therefore a conservative threshold
-of 0.95 will be used, meaning any loci with more than 5% missing data
-will be removed.
+missing data, as seen plotted below.
 ![](figures/loci_missingness-1.png)<!-- -->![](figures/loci_missingness-2.png)<!-- -->![](figures/loci_missingness-3.png)<!-- -->![](figures/loci_missingness-4.png)<!-- -->![](figures/loci_missingness-5.png)<!-- -->
+
+Given the low proportion of missingness per site in all populations, a
+conservative threshold for filtering can be applied. For each
+population, sites with at least 5% missingness will be determined.
+However, downstream analysis will require different data sets,
+specifically a data set of just PAL samples to look at fine scale
+dispersal and a data set of all samples to look at population genetics
+(both to include outgroups samples, n=2). Thus two lists of sites to
+remove will be created on the basis of locality.
+
+    #Sites to remove for PAL data set
+    awk 'NR > 1 && $6 > 0.05 { print $1, $2 }' PAL.lmiss > badsitesPAL.txt
+    #Sites to remove for popgen data set
+    awk 'FNR > 1 && $6 > 0.05 { print $1, $2 }' PAL.lmiss BS.lmiss LI.lmiss KGI.lmiss EI.lmiss | sort -k1,1 -k2,2n | uniq > badsitesALL.txt
+
+Before site removal can occur, the data set needs to be subsetted so
+there are two subsequent data sets: one for fine scale dispersal and one
+for population genetics. This was completed using *vcftools* v0.1.16
+function `--keep`. The fine scale data set will include the two outgroup
+samples, as these may be necessary in further downstream analysis.
+
+<figure>
+<img src="figures/VCFflowchart.png"
+alt="Flow chart for the emergence of the two data sets" />
+<figcaption aria-hidden="true">Flow chart for the emergence of the two
+data sets</figcaption>
+</figure>
+
+**Code**
+
+    #Merge PAL and OG .keep files to be used to subset the vcf file
+    cat PAL.keep OG.keep > PAL_OG.keep
+    #Create PAL dataset as a subset from all data
+    vcftools --vcf biallelic_sites.recode.vcf --keep localities/PAL_OG.keep --recode --recode-INFO-all --out PAL_OG_subset
+
+With two separate data sets, sites missingness \>5% by population can
+now be removed using *vcftools* v0.1.16 function
+`--exclude-positions`.  
+**Code**
+
+    #Sites removed for fine scale dispersal data set
+    vcftools --vcf finescale.recode.vcf --exclude-positions badsitesPAL.txt --recode --recode-INFO-all --out finescale_site_removed
+    #Sites removed for population genetics data set
+    vcftools --vcf biallelic_sites.recode.vcf --exclude-positions badsitesALL.txt --recode --recode-INFO-all --out popgen_site_removed
+
+**Data loss**  
+*Fine scale dispersal data set:*  
+After filtering, kept 73576 out of a possible 73993 Sites.  
+*Population genetics data set:*  
+After filtering, kept 72446 out of a possible 73993 Sites.
