@@ -190,5 +190,20 @@ After filtering, kept 73576 out of a possible 73993 Sites.
 *Population genetics data set:*  
 After filtering, kept 72446 out of a possible 73993 Sites.  
 
+### Filter sites by allele count 
+
+As the aim is to detect relatedness on the order of kinship within the PAL samples, alleles will be filtered by count and not frequency. A minor allele count of 3 ensures SNPs detected occur in at least 2 individuals, preventing the removal of rarer biological informative variants that occur in low frequencies but very closely related individuals. To be consistent and allow the datasets to be comparable, a minor allele count of 3 will also be applied to the population genetics dataset. This was done using *vcftools* v0.1.16 function ```--mac 3```.  
+**Code**  
+```
+#filtering by a minor allele count of 3 for fine scale dispersal data
+vcftools --vcf finescale_site_removed.recode.vcf --mac 3 --recode --recode-INFO-all --out finescale_mac
+#filtering by a minor allele count of 3 for population genetics data
+vcftools --vcf popgen_site_removed.recode.vcf --mac 3 --recode --recode-INFO-all --out popgen_mac
+```  
+**Data loss**  
+*Fine scale dispersal data set:*  
+After filtering, kept 45809 out of a possible 73576 Sites
+*Population genetics data set:*  
+After filtering, kept 48349 out of a possible 72446 Sites
 
 
