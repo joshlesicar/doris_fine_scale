@@ -40,7 +40,7 @@ Only sites with a minimum base quality score of 30 were retained, corresponding 
 
 **Code**  
 ```bash
-vcftools --gzvcf doris29_raw.vcf.gz --minQ 30 --out $OUTPUT_DIR/rm_indels.vcf --recode --recode-INFO-all
+vcftools --vcf rm_indels.recode.vcf --minQ 30 --out $OUTPUT_DIR/rm_indels.vcf --recode --recode-INFO-all
 ```  
 **Data loss**  
 After filtering, kept 113042 out of a possible 120429 Sites.   
@@ -202,8 +202,84 @@ vcftools --vcf popgen_site_removed.recode.vcf --mac 3 --recode --recode-INFO-all
 ```  
 **Data loss**  
 *Fine scale dispersal data set:*  
-After filtering, kept 45809 out of a possible 73576 Sites
+After filtering, kept 45809 out of a possible 73576 Sites.  
 *Population genetics data set:*  
-After filtering, kept 48349 out of a possible 72446 Sites
+After filtering, kept 48349 out of a possible 72446 Sites.  
+
+### Filter sites by maximum heterozygosity  
+
+Heterozygosity for a biallelic SNP should theoretically be ≤0.5. Values > 0.5 may represent paralogous loci or multilocus contigs (ref: https://onlinelibrary.wiley.com/doi/full/10.1111/j.1755-0998.2010.02967.x). Therefore, sites with an observed heterozygosity >0.5 were found and removed from both data sets. This was done in R, using the packages ```adegenet``` and ```vcfr```.  
+
+**Code**
+```
+Required R packages:  
+#install.packages("adegenet")
+#install.packages("vcfR")
+library(adegenet)
+library(vcfR)
+
+#calculating site heterozygosity for fine scale dispersal data  
+
+#import vcf file into R
+vcf_finescale <- read.vcfR("finescale_siteID.vcf")
+#convert vcf data into a genind object
+finescale_genind <- vcfR2genind(vcf_finescale)
+#summary statistics
+summary_finescale = summary(finescale_genind)
+summary_finescale$Hobs
+#export site heterozygosity into a csv file
+write.csv(summary_finescale$Hobs, file = "Finescale_Hobs_per_SNP.csv")
+
+
+#calculating site heterozygosity for population genetics data  
+vcf_popgen <- read.vcfR("popgen_siteID.vcf")
+popgen_genind <- vcfR2genind(vcf_popgen)
+summary_popgen = summary(popgen_genind)
+summary_popgen$Hobs
+write.csv(summary_popgen$Hobs, file = "Popgen_Hobs_per_SNP.csv")
+```  
+The exported .csv files can be then be sorted to delineate sites with an observed heterozygosity >0.5. From this data sorting step, two additional files were created: PALbadSNPs.txt and PopgenbadSNPs.txt. These files had the format <locus> and <position> which were tab delimited.  
+
+**Code**  
+```
+#removing sites for fine scale data set  
+vcftools --vcf finescale_mac.recode.vcf --exclude-positions PALbadSNPs.txt --recode --recode-INFO-all --out Finescale_max_het05  
+#removing sites for population genetics data set  
+vcftools --vcf popgen_mac.recode.vcf --exclude-positions PopgenbadSNPs.txt --recode --recode-INFO-all --out Popgen_max_het05   
+```  
+**Data loss**  
+*Fine scale dispersal data set:*  
+After filtering, kept 37870 out of a possible 45809 Sites.  
+*Population genetics data set:*  
+After filtering, kept 40542 out of a possible 48349 Sites.  
+
+### Selecting one SNP per locus  
+The last step of the variant filtering process involved selecting one SNP per locus. This reduces the potential for linkage disequilibrium, which occurs when nearby SNPs have a non random association. As many analyses treat each SNP as independent, their occurrence would lead to the inflated estimates of genetic variation in samples. This step required extracting all SNP identifications, and extracting the first one from each locus into a list that was then used to filter the .vcf file. 
+
+**Code**
+```
+#Steps for fine scale data set.
+
+#Extract a list of all SNP IDs from the vcf fil
+grep -v "^#" Finescale_max_het05.recode.vcf | cut -f1,2 > Finescale_SNPs.tx
+#Isolate the first SNP per locus into a text file
+awk '!seen[$1]++' Finescale_SNPs.txt > Finescale_one_SNP_per_locus.txt
+#Filter SNPs to keep one SNP per locu
+vcftools --vcf Finescale_max_het05.recode.vcf --positions Finescale_one_SNP_per_locus.txt --recode --recode-INFO-all --out Finescale_SNPs
+
+#Steps for population genetics data set.
+
+#Extract a list of all SNP IDs from the vcf file
+grep -v "^#" Popgen_max_het05.recode.vcf | cut -f1,2 > Popgen_SNPs.txt
+#Isolate the first SNP per locus into a text file
+awk '!seen[$1]++' Popgen_SNPs.txt > Popgen_one_SNP_per_locus.txt
+#Filter SNPs to keep one SNP per locus
+vcftools --vcf Popgen_max_het05.recode.vcf --positions Popgen_one_SNP_per_locus.txt --recode --recode-INFO-all --out Popgen_SNPs
+```  
+**Data loss**  
+*Fine scale dispersal data set:*  
+After filtering, kept 7164 out of a possible 37870 Sites.  
+*Population genetics data set:*  
+After filtering, kept 7165 out of a possible 40542 Sites.  
 
 
