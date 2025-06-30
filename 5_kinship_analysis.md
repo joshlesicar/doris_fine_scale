@@ -1,0 +1,102 @@
+
+# Kinship Analysis
+
+## Tools & manuals
+
+*vcftools* v0.1.16 [manual.](https://vcftools.github.io/man_latest.html)
+
+## Kinship dataset
+
+### Removal of unrelated individuals
+
+Individuals that were found to genetically differ from the majority in
+the Palmer Archipelago were excluded from the kinship dataset. This was
+determined using structure and a PCA.
+
+Firstly, the `PAL.keep` file was duplicated, and a list of individuals
+exlcuded to prodice `KINSHIP.keep`.
+
+Individuals excluded: RNO2_L0056 RNO2_L0062 RNO2_L0139 RNO2_L0141
+RNO2_L0142 RNO2_L0145 RNO2_L0148 RNO2_L0158 RNO2_L0160 RNO2_L0163
+RNO2_L0164
+
+As this kinship dataset comprised a new configuration of individuals,
+population specific SNP filtering was applied.
+
+### Remove sites by missingness
+
+Site missingness was calculated using vcftools v0.1.16 functions –keep
+and –missing-site.
+
+    vcftools --vcf biallelic_sites.recode.vcf --keep localities/KINSHIP.keep --missing-site --out KINSHIP
+
+\#Sites to remove for PAL data set
+
+As kinship analysis is sensitive to call rate, and missingness is very
+low, the most strignet filter was applied: sites with any missingness to
+be excluded.
+
+    awk 'NR > 1 && $6 > 0 { print $1, $2 }' KINSHIP.lmiss > badsitesKINSHIP.txt
+
+A VCF file for just kinship individuals was then created.
+
+    vcftools --vcf biallelic_sites.recode.vcf --keep localities/KINSHIP.keep --recode --recode-INFO-all --out KINSHIP_initial
+
+Sites with any missingness were then removed.
+
+    vcftools --vcf KINSHIP_initial.recode.vcf --exclude-positions badsitesKINSHIP.txt --recode --recode-INFO-all --out KINSHIP_CR1
+
+After filtering, kept 72463 out of a possible 73993 Sites.
+
+### Filter by maximum observed heterozygosity
+
+Filtered by a maximum observed heterozygosity of 0.7 (in line with
+<https://esj-journals.onlinelibrary.wiley.com/doi/epdf/10.1002/1438-390X.12192>).
+
+    Required R packages:  
+    #install.packages("adegenet")
+    #install.packages("vcfR")
+    library(adegenet)
+    library(vcfR)
+
+    #calculating site heterozygosity for fine scale dispersal data  
+
+    #import vcf file into R
+    vcf_kinship <- read.vcfR("KINSHIP_CR1.recode.vcf")
+    #convert vcf data into a genind object
+    kinship_genind <- vcfR2genind(vcf_kinship)
+    #summary statistics
+    summary_kinship = summary(kinship_genind)
+    summary_kinship$Hobs
+    #export site heterozygosity into a csv file
+    write.csv(summary_kinship$Hobs, file = "kinship_Hobs_per_SNP.csv")
+
+Sites with a heterozygosity ≥ 0.7 can now be removed.
+
+    vcftools --vcf KINSHIP_CR1.recode.vcf --exclude-positions kinship_bad_SNPs.txt --recode --recode-INFO-all --out KINSHIP_max_het07
+
+After filtering, kept 66045 out of a possible 72463 Sites
+
+### Filter by MAF
+
+    vcftools --vcf KINSHIP_max_het07.recode.vcf --maf 0.3 --recode --recode-INFO-all --out KINSHIP_maf03
+
+After filtering, kept 2514 out of a possible 66045 Sites.
+
+### Select one SNP per locus
+
+    vcftools --vcf KINSHIP_maf03.recode.vcf --thin 500 --recode --recode-INFO-all --out KINSHIP_SNPs
+
+After filtering, kept 1646 out of a possible 2514 Sites.
+
+\##Kinship Analysis
+
+\###Sequoia
+
+First the VCF file will be converted into a .RAW file that can be
+interpreted by Sequoia.
+
+    #convert vcf file to plink
+    #plink --vcf KINSHIP_SNPs.recode.vcf --allow-extra-chr --recode --out KINSHIP_SNPs
+    #extract data from plink file
+    #plink --file KINSHIP_SNPs --allow-extra-chr --recodeA --out sequoia_KINSHIP_SNPs
