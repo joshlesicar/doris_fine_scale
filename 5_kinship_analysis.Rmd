@@ -119,3 +119,18 @@ First the VCF file will be converted into a .RAW file that can be interpreted by
 ```  
 
 Sequoia was then run 
+
+###MCMC-ped
+
+I need to transfrom my .vcf file into .tped format. This can be done with plink.
+
+```
+plink --vcf KINSHIP_SNPs.recode.vcf --allow-extra-chr --make-bed --out MCMC_KINSHIP_BINARY
+plink --bfile MCMC_KINSHIP_BINARY --allow-extra-chr --recode transpose --out MCMC_KINSHIP
+```
+
+Recode column 3 and 4 to 0 as genetic distance and physical distance is both unknown for ddRADseq data.
+
+```
+awk '{$3 = 0; $4 = 0; OFS=" "; print}' input.tped > output.tped
+```
