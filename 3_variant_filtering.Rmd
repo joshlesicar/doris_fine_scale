@@ -75,7 +75,7 @@ After filtering, kept 73736 out of a possible 106249 Sites.
 
 ### Site missingness  
 
-Ordinarily, this filtering step would completed per population, to avoid creating biases. However, only sites present in all samples will be kept, eliminating the requirment to evaluate sites per population. 
+Ordinarily, this filtering step would completed per population, to avoid creating biases. However, only sites present in all samples will be kept, eliminating the requirement to evaluate sites per population. 
 **Code**  
 ```bash
 module load vcftools
