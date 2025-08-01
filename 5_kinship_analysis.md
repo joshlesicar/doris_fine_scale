@@ -157,3 +157,11 @@ Recode column 3 and 4 to 0 as genetic distance and physical distance is
 both unknown for ddRADseq data.
 
     awk '{$3 = 0; $4 = 0; OFS=" "; print}' input.tped > output.tped
+
+\###Related R Package
+
+Firstly, a genotype file needs to be created. It is similar to the
+format structure uses, so it will be formatted that way.
+
+    plink --vcf KINSHIP_SNPs.recode.vcf --allow-extra-chr --recode --out kinshiptemp
+    plink --file kinshiptemp --allow-extra-chr --recode structure --out KINSHIP_related

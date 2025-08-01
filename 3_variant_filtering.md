@@ -88,7 +88,7 @@ Sites.
 
 Ordinarily, this filtering step would completed per population, to avoid
 creating biases. However, only sites present in all samples will be
-kept, eliminating the requirment to evaluate sites per population.
+kept, eliminating the requirement to evaluate sites per population.
 **Code**
 
 ``` bash

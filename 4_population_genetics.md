@@ -67,3 +67,39 @@ of a possible 60681 Sites.
 
 Data loss from retaining 1 SNP per locus: After filtering, kept 4218 out
 of a possible 11243 Sites.
+
+## Fst Values
+
+First a population file was created.
+
+## Structure but without outgroup (Dataset 3)
+
+### Creating dataset 3
+
+Dataset 3 will comprise all individuals except for the out group.
+
+A text file, `indv_remove_dataset3` was created with these individuals.
+They will be removed using *vcftools* function `--remove`.
+
+    vcftools --vcf max_missing.recode.vcf --remove indv_remove_dataset3.txt --recode --recode-INFO-all --out dataset3_maxmissing
+
+Data loss: After filtering, kept 162 out of 164 Individuals. After
+filtering, kept 68504 out of a possible 68504 Sites.
+
+**Filter by maximum observed heterozygosity, minor allele frequency and
+keep 1 SNP per locus.** For methodology please refer to [Variant
+filtering.](3_variant_filtering.md)
+
+Data loss from heterozygosity: After filtering, kept 60911 out of a
+possible 68504 Sites.
+
+Data loss from minor allele frequency: After filtering, kept 13727 out
+of a possible 60911 Sites.
+
+Data loss from retaining 1 SNP per locus: After filtering, kept 5036 out
+of a possible 13727 Sites.
+
+### Structure analysis
+
+    plink --vcf dataset3.recode.vcf --allow-extra-chr --recode --out dataset3temp
+    plink --file dataset3temp --allow-extra-chr --recode structure --out dataset3_structure
