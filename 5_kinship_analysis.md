@@ -165,3 +165,85 @@ format structure uses, so it will be formatted that way.
 
     plink --vcf KINSHIP_SNPs.recode.vcf --allow-extra-chr --recode --out kinshiptemp
     plink --file kinshiptemp --allow-extra-chr --recode structure --out KINSHIP_related
+
+\###Pairwise relatedness with plink Pairwise relatedness will be
+calculated with dataset2, as it relies on population allele frequencies.
+Dataset2 includes samples outside of the PAL which are identified to be
+part of the same population with structure analyses.
+
+    plink --vcf KINSHIP_SNPs.recode.vcf --allow-extra-chr --make-bed --out KINSHIP_bed
+    plink --bfile KINSHIP_bed --allow-extra-chr --genome --out KINSHIP_plink
+
+The .genome file produced by plink can then be analysed in R to
+calculate a kinship coefficient.
+
+    ibd_probabiliteis <- read.table("KINSHIP_plink.genome", header = TRUE)
+    kinship_coefficient = ibd_probabiliteis$Z1/4+ibd_probabiliteis$Z2/2
+    ibd_probabiliteis$kinship_coefficient = kinship_coefficient
+
+\###Coancestry
+
+*Simulated dataset*
+
+First a simulated dataset will be created to determine the best
+estimator. To be consistent, allele frequencies will be generated with
+plink.
+
+    plink --bfile KINSHIP_bed --allow-extra-chr --freq --out KINSHIP_allele_freqs
+
+    In R:
+    # Read PLINK .frq file
+    frq <- read.table("KINSHIP_allele_freqs.frq", header = TRUE)
+
+
+    # Define allele to integer mapping
+    allele_map <- c("A" = 1, "T" = 2, "C" = 3, "G" = 4)
+
+    # Map A1 and A2 to integers
+    frq$A1_code <- allele_map[as.character(frq$A1)]
+    frq$A2_code <- allele_map[as.character(frq$A2)]
+
+    # Construct lines for COANCESTRY
+    allele_lines <- paste(frq$A1_code, frq$A2_code)
+    freq_lines <- paste(frq$MAF, 1 - frq$MAF)
+
+    # Interleave allele and frequency lines
+    output <- character(length(freq_lines) * 2)
+    output[seq(1, length(output), 2)] <- allele_lines
+    output[seq(2, length(output), 2)] <- freq_lines
+
+    # Write to file
+    writeLines(output, "coancestry_allele_freqs.txt")
+
+A text file containing loci missing rate, error rate and allelic dropout
+was then generated.
+
+    #Set number of loci
+    n_loci <- 4341
+
+    #Create a data frame
+    loci_error_rates <- data.frame(
+      MissingRate = rep(0, n_loci),
+      GenotypingError = rep(0.01, n_loci),
+      AllelicDropout = rep(0.01, n_loci)
+    )
+
+    #Write to space-delimited text file with no header
+    write.table(loci_error_rates, "coancestry_locus_error_rates.txt", 
+                row.names = FALSE, col.names = FALSE, quote = FALSE)
+
+Next, true relatedness to be simulated was determined. This included 500
+of each: parent/offspring pairs, full siblings, half siblings, first
+cousins and unrelated pairs. For information regarding identity by
+descent coefficients , see [Wang,
+2007](https://doi.org/10.1017/s0016672307008798).
+
+| Relationship |   S7 |   S8 |   S9 |
+|:-------------|-----:|-----:|-----:|
+| PO           | 0.00 | 1.00 | 0.00 |
+| FS           | 0.25 | 0.50 | 0.25 |
+| HS           | 0.00 | 0.50 | 0.50 |
+| 1C           | 0.00 | 0.25 | 0.75 |
+| UR           | 0.00 | 0.00 | 1.00 |
+
+Table 1: Identity by descent coefficients for simulated kinship dyads.

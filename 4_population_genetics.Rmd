@@ -104,3 +104,6 @@ After filtering, kept 5036 out of a possible 13727 Sites.
 plink --vcf dataset3.recode.vcf --allow-extra-chr --recode --out dataset3temp
 plink --file dataset3temp --allow-extra-chr --recode structure --out dataset3_structure
 ```
+### Popcluster analysis 
+
+First the vcf file ```dataset3.recode.vcf``` was converted to the correct format using the popcluster windows GUI.

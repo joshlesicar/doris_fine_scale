@@ -5,27 +5,28 @@ knitr:
   opts_chunk:
     fig.path: "figures/"
 ---
+```{r, include = FALSE}
+library(knitr)
+```
 The following is a list and description of the various data sets used in the analyses.
 
-###Dataset 1
+###Dataset 1  
 
 All individuals including the out group samples.Filtering is as specified in [variant filtering](3_variant_filtering.md).
 
-```{r}
-library(knitr)
+```{r,echo = FALSE}
 data_frame <- data.frame(
   Location = c("Palmer Archipelago", "Low Island", "Bransfield Strait", "King George Island", "Elephant Island", "Outgroup (lineage 24)", "Total"),
   N = c(123, 14, 9, 9, 7, 2, 164)
 )
 kable(data_frame, caption = "Table 1: Individuals included in dataset 1.")
 ```
-###Dataset 2
+###Dataset 2  
 
 Dataset 2 was comprised only of individuals identified as being from the same cluster (i.e. ancestral population), as there is suspicion other clusters represent unidentified lineages, as 
 cryptic speciation is prolific within the *Doris "kerguelenensis"* species complex.The individuals included are represented in table 2.
 
-```{r}
-library(knitr)
+```{r,echo = FALSE}
 data_frame <- data.frame(
   Location = c("Palmer Archipelago", "Low Island", "Bransfield Strait", "Elephant Island", "Total"),
   N = c(114, 14, 9, 7, 144)
@@ -33,15 +34,26 @@ data_frame <- data.frame(
 kable(data_frame, caption = "Table 2: Individuals included in dataset 2.")
 ```
 
-###Dataset 3
+###Dataset 3  
 
 Dataset 3 included all individuals except the two out group samples from lineage 24. This dataset was created to replicate the results of dataset 1 and see if they would hold true.
 
-```{r}
-library(knitr)
+```{r,echo = FALSE}
 data_frame <- data.frame(
   Location = c("Palmer Archipelago", "Low Island", "Bransfield Strait", "King George Island", "Elephant Island", "Total"),
   N = c(123, 14, 9, 9, 7, 162)
 )
 kable(data_frame, caption = "Table 3: Individuals included in dataset 3.")
+```
+
+###Kinship dataset  
+
+The kinship data set only included individuals identified as belonging to the same ancestral population (from structure analyses) and from the palmer archipelago.
+
+```{r,echo = FALSE}
+data_frame <- data.frame(
+  Location = c("Palmer Archipelago"),
+  N = c(113)
+)
+kable(data_frame, caption = "Table 4: Individuals included in the kinship data set.")
 ```
